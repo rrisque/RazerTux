@@ -119,9 +119,22 @@ def _find_hidraw(interface: str, pid_filter) -> str | None:
     return None
 
 
+# PIDs whose feature reports are answered on another interface than 0: the Naga V3 Pro
+# dongle (00E8) answers only on interface 3; interfaces 0-2 echo the request with status
+# 0x00 (probed 2026-11-12).
+CONTROL_INTERFACE = {0x00E8: "03"}
+
+
 def find_control_hidraw(pid_filter=(0x00A7, 0x00A8, 0x00E7, 0x00E8)) -> str | None:
-    """Return the hidraw node of the mouse interface (interface 0), or None."""
-    return _find_hidraw("00", pid_filter)
+    """Return the hidraw node that answers Razer feature reports (interface 0, or the
+    PID's entry in CONTROL_INTERFACE), or None."""
+    special = [p for p in pid_filter if p in CONTROL_INTERFACE]
+    for pid in special:
+        node = _find_hidraw(CONTROL_INTERFACE[pid], (pid,))
+        if node is not None:
+            return node
+    rest = tuple(p for p in pid_filter if p not in CONTROL_INTERFACE)
+    return _find_hidraw("00", rest) if rest else None
 
 
 NAGA_V3_PRO_PIDS = (0x00E7, 0x00E8)

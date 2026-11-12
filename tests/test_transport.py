@@ -105,3 +105,18 @@ def test_find_hidraw_honours_pid_filter(monkeypatch):
     assert tr.find_vendor_hidraw((0x00A8,)) == "/dev/hidraw8"
     assert tr.find_control_hidraw((0x00A7,)) == "/dev/hidraw2"
     assert tr.find_control_hidraw() == "/dev/hidraw2"
+
+
+def test_naga_v3_pro_dongle_control_is_interface_3(monkeypatch):
+    """00E8 answers feature reports only on interface 3; its vendor reports stay on 1."""
+    devs = [_udev_hidraw(f"/dev/hidraw{16 + i}", "00e8", f"0{i}") for i in range(4)]
+
+    class Ctx:
+        def list_devices(self, **kw):
+            return devs
+
+    monkeypatch.setattr(tr.pyudev, "Context", Ctx)
+    assert tr.find_control_hidraw((0x00E8,)) == "/dev/hidraw19"
+    assert tr.find_control_hidraw() == "/dev/hidraw19"
+    assert tr.find_vendor_hidraw((0x00E8,)) == "/dev/hidraw17"
+    assert tr.naga_v3_pro_connected()

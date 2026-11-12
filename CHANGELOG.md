@@ -6,8 +6,10 @@ All notable changes to RazerTux. Each version below becomes a GitHub release wit
 
 ### Added
 - Razer Naga V3 Pro (1532:00E7 wired, 00E8 dongle) on the Naga V2 Pro driver. Checked
-  over USB; the dongle PID is untested. Not in OpenRazer yet, so the generator adds the
-  PIDs (`EXTRA_PIDS` in `tools/import_openrazer.py`). See docs/hardware-notes.md.
+  over USB and over the dongle. Not in OpenRazer yet, so the generator adds the PIDs
+  (`EXTRA_PIDS` in `tools/import_openrazer.py`). See docs/hardware-notes.md.
+  - The dongle answers feature reports on interface 3, not 0 (`CONTROL_INTERFACE` in
+    `razer/transport.py`).
   - All five top buttons are freely assignable: the two DPI buttons top left (default:
     DPI stage up/down, as on the mouse), the two behind the wheel (top button
     front/rear, defaults as on the V2 Pro) and the new ring finger button (no default).

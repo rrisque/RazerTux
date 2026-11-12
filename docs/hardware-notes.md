@@ -185,4 +185,12 @@ the last slot in `~/.config/razertux/state.json`.
   has no wheel LED). Since both share the `naga_v2_pro` entry, the GUI asks
   `transport.naga_v3_pro_connected()` (PID 00E7/00E8 present) to add the scroll zone and
   to pick the V3 Pro layout.
-- Not checked: scroll-wheel stages/haptics, tilt wheel, battery over the dongle.
+- **Dongle (1532:00E8):** same four interfaces, but feature reports are answered only on
+  **interface 3**; interfaces 0-2 echo the request with status 0x00. Hence
+  `CONTROL_INTERFACE = {0x00E8: "03"}` in `razer/transport.py`. The answer takes ~3-6 ms
+  (two to four busy polls, inside BUSY_RETRIES). Everything read over the cable reads the
+  same here (firmware v1.1, serial, DPI stages, poll rate, idle time, low-battery
+  threshold, brightness of all three LEDs), plus battery (`0x07/0x80` → `00 dc` = 86 %).
+  Device mode 0x03 sets fine; top buttons then report on the if01 hidraw node with the
+  same codes as over the cable, and lighting effects apply to all three zones.
+- Not checked: scroll-wheel stages/haptics, tilt wheel.
